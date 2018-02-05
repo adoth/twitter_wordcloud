@@ -22,7 +22,9 @@ def clean_data(file_name):
         texts = []
         for line in f:
             if line != '\n' or line[:4] != 'http':
-                texts.append(line.split('http')[0])
+                text = line.split('http')[0]
+                if text != '\n' and text != []:
+                    texts.append(text)
 
     file = open(file_name, 'w', encoding="UTF-8")
 
