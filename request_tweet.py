@@ -1,9 +1,19 @@
 from requests_oauthlib import OAuth1Session
 import json
 from time import sleep
-from setting import CK, CS, AT, AS
 
+import twitter.wordcloud as word
 
+try:
+    from twitter.setting import CK, CS, AT, AS
+
+except ImportError:
+    CK = input('CK>')
+    CS = input('CS>')
+    AT = input('AT>')
+    AS = input('AC>')
+
+    
 def input_data(user_name):
     url = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 
@@ -17,8 +27,8 @@ def input_data(user_name):
     return url, params, twitter
 
 
-def clean_data(file_name):
-    with open(file_name, 'r', encoding="UTF-8") as f:
+def clean_data(file_path):
+    with open(file_path, 'r', encoding="UTF-8") as f:
         texts = []
         for line in f:
             if line != '\n' or line[:4] != 'http':
@@ -26,21 +36,24 @@ def clean_data(file_name):
                 if text != '\n' and text != []:
                     texts.append(text)
 
-    file = open(file_name, 'w', encoding="UTF-8")
+    file = open(file_path, 'w', encoding="UTF-8")
 
     for text in texts:
-        file.writelines(text)
+        if text:
+            file.writelines(text)
 
     file.close()
 
 
 def main():
-    user_name = user_name
-    file_name = file_name
+    print('--- start ---')
+    user_name = '@{}'.format(input('account_id > @'))
+    file_name = '{}.csv'.format(user_name)
+    file_path = 'tweet/{}'.format(file_name)
     url, params, twitter = input_data(user_name)
-    f_out = open(file_name, 'w', encoding="UTF-8")
+    f_out = open(file_path, 'w', encoding="UTF-8")
 
-    for j in range(3):
+    for j in range(100):
         res = twitter.get(url, params=params)
 
         if res.status_code == 200:
@@ -51,6 +64,8 @@ def main():
                 sleep(60 * 15)
 
             timeline = json.loads(res.text)
+            if not timeline:
+                break
             for i in range(len(timeline)):
                 if i != len(timeline) - 1:
                     f_out.write(timeline[i]['text'] + '\n')
@@ -59,7 +74,9 @@ def main():
                     params['max_id'] = timeline[i]['id'] - 1
 
     f_out.close()
-    clean_data(file_name)
+    print('--- finish file ---')
+    clean_data(file_path)
+    word.main(user_name, file_path)
 
 
 if __name__ == '__main__':
