@@ -2,18 +2,10 @@ from requests_oauthlib import OAuth1Session
 import json
 from time import sleep
 
-import twitter.wordcloud as word
+import twitter_wordcloud.wordcloud as word
+from twitter_wordcloud.setting import CK, CS, AT, AS
 
-try:
-    from twitter.setting import CK, CS, AT, AS
 
-except ImportError:
-    CK = input('CK>')
-    CS = input('CS>')
-    AT = input('AT>')
-    AS = input('AC>')
-
-    
 def input_data(user_name):
     url = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 

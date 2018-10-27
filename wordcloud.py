@@ -45,4 +45,3 @@ def main(user_name, file_path):
     plt.axis("off")
     print('--- show img ---')
     plt.show()
-
